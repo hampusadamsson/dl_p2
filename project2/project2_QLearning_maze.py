@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
-from project2_environment import environment_maze as environment
+# from project2_environment import environment_maze as environment
+from project2_task2_environment import environment_maze as environment
 
 # Parameters
 num_rows = 5
@@ -23,9 +24,21 @@ Q = np.zeros([num_states, num_actions])
 
 # First, generate a random maze by placing walls randomly
 Mazewall = np.zeros([40])
-for i in range(40):
-    if np.random.random() < connectivity:
-        Mazewall[i] = 1
+Mazewall[4] = 1
+Mazewall[8] = 1
+Mazewall[12] = 1
+Mazewall[7] = 1
+Mazewall[11] = 1
+Mazewall[15] = 1
+Mazewall[36] = 1
+Mazewall[37] = 1
+Mazewall[38] = 1
+
+# for i in range(40):
+#     if np.random.random() < connectivity:
+#         Mazewall[i] = 1
+
+        
 # Now, start the learning
 for i_episodes in range(num_episodes):
     S = 0
@@ -40,6 +53,7 @@ for i_episodes in range(num_episodes):
             maxarray = np.zeros([num_actions])
         R, Sn, T = environment(
             S, A, Mazewall)  # Observe the outputs of the state transition
+    
         Q[S, A] = (1 - alpha) * Q[S, A] + alpha * (
             R + gamma * np.max(Q[Sn]))  # Perform Q learning
         if T == 1:

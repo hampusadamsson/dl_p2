@@ -16,16 +16,25 @@ from project2_state_representation import matrix_state
 
 # discount factor 
 gamma = 0.9
+gamma = 0.99
 # learning rate
 alpha = 0.00025
+alpha= 0.005
+
 # size of minibatch
 size_minibatch = 32
+size_minibatch = 3
+size_minibatch = 10
+
 # whether to use experience replay or not
-replay = 1
+replay = 0
+
 # number of episodes
 num_episodes = 20000
+num_episodes = 1500
 # period for updating target network
 target_net_update_period = 20
+target_net_update_period = 3
 # Performed time steps in each episdoe
 num_trials=np.zeros([num_episodes])
 
@@ -76,12 +85,13 @@ target_net_variables = tf.get_collection(
 ### LOSS FUNCTION ###
 Y_targets = R + gamma * tf.mul(T, tf.reduce_max(target_Q, 1))
 Y_onlines = tf.reduce_sum(tf.mul(online_Q, A), 1)
-loss = tf.reduce_mean(tf.square(tf.sub(Y_targets, Y_onlines)))
+# loss = tf.reduce_mean(tf.square(tf.sub(Y_targets, Y_onlines)))
+loss = tf.reduce_sum(tf.square(tf.sub(Y_targets, Y_onlines)))
 
 ### OPTIMIZER ###
-optimizer = tf.train.RMSPropOptimizer(alpha).minimize(
-    loss, var_list=online_net_variables)
-
+optimizer = tf.train.RMSPropOptimizer(alpha).minimize(loss, var_list=online_net_variables)
+# optimizer = tf.train.AdamOptimizer(alpha).minimize(loss, var_list=online_net_variables)
+# optimizer = tf.train.MomentumOptimizer(0.1, alpha).minimize(loss, var_list=online_net_variables)
 
 ### ONLINE NET UPDATER ###
 def online_net_update(optimizer, minibatch):
