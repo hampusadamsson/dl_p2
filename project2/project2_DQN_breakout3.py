@@ -15,26 +15,23 @@ from project2_state_representation import matrix_state
 #####################################################################
 
 # discount factor 
-gamma = 0.9
-gamma = 0.99
+gamma = 0.25
+
 # learning rate
-alpha = 0.00025
-alpha= 0.005
+alpha = 0.01 #0.005
 
 # size of minibatch
-size_minibatch = 32
-size_minibatch = 3
-size_minibatch = 10
+size_minibatch = 6
 
 # whether to use experience replay or not
 replay = 0
 
 # number of episodes
-num_episodes = 20000
-num_episodes = 1500
+num_episodes = 1000 #20000
+
 # period for updating target network
-target_net_update_period = 20
 target_net_update_period = 3
+
 # Performed time steps in each episdoe
 num_trials=np.zeros([num_episodes])
 
@@ -49,12 +46,21 @@ def DeepQNetwork(state):
     init = tf.random_normal_initializer()
 
     # Create variable named "weights1" and "biases1"
-    weights1 = tf.get_variable("weights1", [5 * 5, 5], initializer=init)
-    biases1 = tf.get_variable("biases1", [5], initializer=init)
+    weights1 = tf.get_variable("weights1", [5 * 5, 1*5], initializer=init)
+    biases1 = tf.get_variable("biases1", [1*5], initializer=init)
 
     # Create 1st layer
     in1 = tf.reshape(state, [-1, 5 * 5])
-    return tf.matmul(in1, weights1) + biases1
+    lay1 = tf.matmul(in1, weights1) + biases1
+
+    # Create variable named "weights2" and "biases2"
+    weights2 = tf.get_variable("weights2", [1 * 5, 5], initializer=init)
+    biases2 = tf.get_variable("biases2", [5], initializer=init)
+
+    # Create 2st layer
+    lay2 = tf.matmul(lay1, weights2) + biases2
+    return lay2
+    # return tf.matmul(in1, weights1) + biases1
 
 
 ### SELECT Q NETWORK AND CORRESPONDING STATE DIMENSION.
@@ -176,7 +182,7 @@ with tf.Session() as sess:
                 replay_memory[1].append(A_)
                 replay_memory[2].append([R_])
                 replay_memory[3].append(Sn_)
-                replay_memory[4].append([T_])
+                replay_memory[4].append([1-T_])
 
                 # Size of the replay memory
                 size_memory = len(replay_memory[0])
@@ -199,7 +205,7 @@ with tf.Session() as sess:
                 minibatch[1].append(A_)
                 minibatch[2].append([R_])
                 minibatch[3].append(Sn_)
-                minibatch[4].append([T_])
+                minibatch[4].append([1-T_])
 
                 if len(minibatch[
                         0]) == size_minibatch:  # If minibatch is full,
@@ -242,3 +248,32 @@ Xaxis = np.linspace(1, 100, 100, endpoint=True)
 C = np.mean(np.reshape(num_trials, [100, num_episodes / 100]), axis=1)
 plt.plot(Xaxis, C, '.')
 plt.show()
+
+
+
+
+
+
+# # discount factor 
+# gamma = 0.9
+# gamma = 0.99
+# # learning rate
+# alpha = 0.00025
+# alpha= 0.005
+
+# # size of minibatch
+# size_minibatch = 32
+# size_minibatch = 3
+# size_minibatch = 10
+
+# # whether to use experience replay or not
+# replay = 0
+
+# # number of episodes
+# num_episodes = 20000
+# num_episodes = 1500
+# # period for updating target network
+# target_net_update_period = 20
+# target_net_update_period = 3
+# # Performed time steps in each episdoe
+# num_trials=np.zeros([num_episodes])
